@@ -1,0 +1,112 @@
+CREATE TABLE rfid_cards (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  card_uid VARCHAR(128) NOT NULL UNIQUE,
+  user_id BIGINT UNSIGNED,
+  status ENUM('active','inactive','guest') DEFAULT 'active',
+  issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_used_at DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE TABLE stations (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(64) NOT NULL UNIQUE,
+  name VARCHAR(255) NOT NULL,
+  address VARCHAR(512),
+  city VARCHAR(128),
+  district VARCHAR(128),
+  latitude DECIMAL(10,7),
+  longitude DECIMAL(10,7),
+  status VARCHAR(32) DEFAULT 'active'
+);
+CREATE TABLE devices (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  device_id VARCHAR(128) NOT NULL UNIQUE,
+  station_id BIGINT UNSIGNED,
+  type VARCHAR(64),
+  firmware_version VARCHAR(64),
+  status VARCHAR(32) DEFAULT 'offline',
+  last_online_at DATETIME,
+  FOREIGN KEY (station_id) REFERENCES stations(id) ON DELETE SET NULL
+);
+CREATE TABLE device_status_history (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  device_id BIGINT UNSIGNED NOT NULL,
+  timestamp DATETIME NOT NULL,
+  status VARCHAR(32),
+  current_a DOUBLE,
+  voltage_v DOUBLE,
+  temperature_c DOUBLE,
+  power_kw DOUBLE,
+  FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
+);
+CREATE TABLE charging_sessions (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  session_id VARCHAR(128) NOT NULL UNIQUE,
+  device_id BIGINT UNSIGNED NOT NULL,
+  user_id BIGINT UNSIGNED,
+  start_at DATETIME,
+  end_at DATETIME,
+  meter_start DOUBLE,
+  meter_stop DOUBLE,
+  energy_kwh DOUBLE GENERATED ALWAYS AS (COALESCE(meter_stop,0) - COALESCE(meter_start,0)) VIRTUAL,
+  co2_reduction_kg DOUBLE,
+  status VARCHAR(32) DEFAULT 'active',
+  FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE TABLE payments (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  session_id VARCHAR(128) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  method VARCHAR(64),
+  transaction_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payments_sessions FOREIGN KEY (session_id)
+    REFERENCES charging_sessions(session_id)
+    ON DELETE CASCADE
+);
+CREATE TABLE alerts (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  device_id BIGINT UNSIGNED,
+  station_id BIGINT UNSIGNED,
+  alert_type VARCHAR(128) NOT NULL,
+  severity ENUM('info','warning','critical') DEFAULT 'warning',
+  occurred_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE SET NULL,
+  FOREIGN KEY (station_id) REFERENCES stations(id) ON DELETE SET NULL
+);
+CREATE TABLE firmware_catalog (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  version VARCHAR(64) NOT NULL,
+  device_type VARCHAR(64),
+  url VARCHAR(512) NOT NULL,
+  release_notes TEXT,
+  released_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  is_latest TINYINT(1) DEFAULT 0
+);
+CREATE TABLE device_firmware_status (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  device_id BIGINT UNSIGNED NOT NULL,
+  current_version VARCHAR(64) NOT NULL
+);
+CREATE TABLE device_actions (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  device_id BIGINT UNSIGNED NOT NULL,
+  action VARCHAR(128) NOT NULL,
+  parameters JSON,
+  status VARCHAR(32) DEFAULT 'pending',
+  triggered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  completed_at DATETIME,
+  FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
+);
+
+CREATE TABLE qrcode_sessions (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  session_id VARCHAR(128) NOT NULL UNIQUE,
+  device_id VARCHAR(128) NOT NULL,
+  status ENUM('pending','confirmed','expired') DEFAULT 'pending',
+  user_id BIGINT UNSIGNED,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  confirmed_at DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+

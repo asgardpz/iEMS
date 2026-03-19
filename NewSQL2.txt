@@ -1,0 +1,81 @@
+CREATE TABLE work_orders (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    work_order_code VARCHAR(32) NOT NULL UNIQUE,
+    created_time DATETIME NOT NULL,
+    device_id BIGINT UNSIGNED NOT NULL,
+    segment VARCHAR(16) NOT NULL,
+    current_status VARCHAR(64) NOT NULL,
+    source VARCHAR(64) NOT NULL,
+    description TEXT,
+    repair_status VARCHAR(32) NOT NULL,
+    maintenance_items VARCHAR(128) NOT NULL,
+    assigned_user BIGINT UNSIGNED NOT NULL,
+    priority VARCHAR(16) NOT NULL,
+    inspection_date DATETIME NOT NULL,
+    CONSTRAINT fk_workorders_device FOREIGN KEY (device_id) REFERENCES devices(id),
+    CONSTRAINT fk_workorders_user FOREIGN KEY (assigned_user) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 在 payments 新增UUID欄位
+ALTER TABLE payments ADD COLUMN UUID VARCHAR(126);
+
+-- 在 charging_sessions 新增UUID欄位
+ALTER TABLE charging_sessions ADD COLUMN UUID VARCHAR(126);
+
+CREATE TABLE members (
+    id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT(20) UNSIGNED NOT NULL UNIQUE, -- 一個 user_id 只能有一筆
+    member_id VARCHAR(20) UNIQUE,                -- U-000001 格式
+    status ENUM('active','inactive') NOT NULL DEFAULT 'active',
+    mobile VARCHAR(20),
+    plate_no VARCHAR(20),
+    membership_segment VARCHAR(50),
+    rfid_no VARCHAR(100),
+    last_active TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE roles (
+    id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    role VARCHAR(100) NOT NULL UNIQUE,
+    realtime BOOLEAN NOT NULL DEFAULT FALSE,              -- Real-Time Monitoring
+    dashboard BOOLEAN NOT NULL DEFAULT FALSE,             -- Dashboard
+    transactions BOOLEAN NOT NULL DEFAULT FALSE,          -- Transactions & Billing
+    maintenance BOOLEAN NOT NULL DEFAULT FALSE,           -- Maintenance Management
+    reports BOOLEAN NOT NULL DEFAULT FALSE,               -- Reports & Analytics
+    device BOOLEAN NOT NULL DEFAULT FALSE,                -- Device Management
+    workorder BOOLEAN NOT NULL DEFAULT FALSE,             -- Work Order Management
+    member BOOLEAN NOT NULL DEFAULT FALSE,                -- Member Management
+    permission BOOLEAN NOT NULL DEFAULT FALSE,            -- Permission Settings
+    account BOOLEAN NOT NULL DEFAULT FALSE                -- Account Management
+);
+
+INSERT INTO roles (
+    role, realtime, dashboard, transactions, maintenance, reports,
+    device, workorder, member, permission, account
+) VALUES
+-- Super Admin：全部功能都有
+('Super Admin', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+
+-- System Admin：除了 Work Order Mgmt. 沒有，其餘都有
+('System Admin', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE),
+
+-- Operations Manager：有 Monitoring、Dashboard、Transactions、Reports、Work Order，其餘沒有
+('Operations Manager', TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE),
+
+-- O&M Technician：有 Monitoring、Dashboard、Maintenance、Device、Work Order，其餘沒有
+('O&M Technician', TRUE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE),
+
+-- Customer Support：有 Monitoring、Dashboard、Transactions、Reports、Member，其餘沒有
+('Customer Support', TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE);
+
+ALTER TABLE members
+ADD COLUMN role_id BIGINT(20) UNSIGNED AFTER user_id,
+ADD CONSTRAINT fk_members_role
+    FOREIGN KEY (role_id) REFERENCES roles(id);
+
+ALTER TABLE members 
+MODIFY COLUMN status VARCHAR(32) DEFAULT 'inactive';
+

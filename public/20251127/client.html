@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>iEMS Client 前台模擬</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; }
+    header { margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    section { border: 1px solid #ccc; padding: 16px; border-radius: 8px; }
+    h2 { font-size: 16px; margin-bottom: 10px; }
+    .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+    label { display: block; margin-top: 8px; font-size: 14px; }
+    input { width: 100%; padding: 6px; margin-top: 4px; }
+    button { margin-top: 10px; padding: 6px 12px; }
+    .result { font-weight: bold; margin-bottom: 6px; }
+    .message { color: red; font-size: 12px; white-space: pre-wrap; }
+    .pane-title { font-weight: 600; margin-bottom: 8px; }
+    .api-base { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>iEMS Client 前台模擬</h1>
+    <div class="api-base">API Base: http://192.168.60.117/iEMS/public/server.php</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- /api/devices/{id}/status -->
+    <section>
+      <h2>/api/devices/{id}/status</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Device ID <input id="status_device_id" value="123456789"></label>
+          <label>Status <input id="status_status" value="online"></label>
+          <label>Current (A) <input id="status_current" value="42.1"></label>
+          <label>Voltage (V) <input id="status_voltage" value="47.5"></label>
+          <label>Temperature (°C) <input id="status_temp" value="36.1"></label>
+          <label>Power (kW) <input id="status_power" value="2.0"></label>
+          <button onclick="callApi(`/api/devices/${enc('status_device_id')}/status`, {
+            device: {
+              id: val('status_device_id'),
+              timestamp: new Date().toISOString(),
+              status: val('status_status'),
+              telemetry: {
+                current_a: parseFloat(val('status_current')),
+                voltage_v: parseFloat(val('status_voltage')),
+                temperature_c: parseFloat(val('status_temp')),
+                power_kw: parseFloat(val('status_power'))
+              }
+            }
+          }, 'status_result', 'status_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="status_result"></div>
+          <div class="message" id="status_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/devices/{id}/actions -->
+    <section>
+      <h2>/api/devices/{id}/actions</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Device ID <input id="ota_device_id" value="123456789"></label>
+          <label>Version <input id="ota_version" value="v1.3.0"></label>
+          <label>Checksum <input id="ota_checksum" value="sha256:abcd1234..."></label>
+          <label>URL <input id="ota_url" value="https://cdn.example.com/fw/v1.3.0.bin"></label>
+          <button onclick="callApi(`/api/devices/${enc('ota_device_id')}/actions`, {
+            device_id: val('ota_device_id'),
+            action: 'Firmware Update',
+            parameters: {
+              version: val('ota_version'),
+              source: { url: val('ota_url'), checksum: val('ota_checksum') },
+              force: true,
+              schedule: { start: new Date().toISOString() }
+            },
+            status: 'pending',
+            triggered_at: new Date().toISOString()
+          }, 'ota_result', 'ota_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="ota_result"></div>
+          <div class="message" id="ota_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/payments -->
+    <section>
+      <h2>/api/payments</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Session ID <input id="payment_session_id" value="TX123456"></label>
+          <label>Amount <input id="payment_amount" value="120.00"></label>
+          <label>Method <input id="payment_method" value="CreditCard"></label>
+          <button onclick="callApi('/api/payments', {
+            session_id: val('payment_session_id'),
+            amount: val('payment_amount'),
+            method: val('payment_method')
+          }, 'payment_result', 'payment_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="payment_result"></div>
+          <div class="message" id="payment_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/stations -->
+    <section>
+      <h2>/api/stations</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Code <input id="station_code" value="ST001"></label>
+          <label>Name <input id="station_name" value="Buddy Coffee"></label>
+          <label>Address <input id="station_address" value="Yan'an St. Nanjing"></label>
+          <label>City <input id="station_city" value="Taipei"></label>
+          <label>District <input id="station_district" value="Xinyi"></label>
+          <label>Latitude <input id="station_lat" value="25.032"></label>
+          <label>Longitude <input id="station_lon" value="121.565"></label>
+          <label>Status <input id="station_status" value="active"></label>
+          <button onclick="callApi('/api/stations', {
+            code: val('station_code'),
+            name: val('station_name'),
+            address: val('station_address'),
+            city: val('station_city'),
+            district: val('station_district'),
+            location: { latitude: parseFloat(val('station_lat')), longitude: parseFloat(val('station_lon')) },
+            status: val('station_status')
+          }, 'station_result', 'station_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="station_result"></div>
+          <div class="message" id="station_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/devices -->
+    <section>
+      <h2>/api/devices</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Device ID <input id="device_id" value="123456789"></label>
+          <label>Station ID <input id="device_station_id" value="1"></label>
+          <label>Type <input id="device_type" value="DC 120 kW"></label>
+          <label>Firmware Version <input id="device_fw" value="v1.2.4"></label>
+          <label>Status <input id="device_status" value="available"></label>
+          <button onclick="callApi('/api/devices', {
+            device_id: val('device_id'),
+            station_id: val('device_station_id'),
+            type: val('device_type'),
+            firmware_version: val('device_fw'),
+            status: val('device_status')
+          }, 'devices_result', 'devices_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="devices_result"></div>
+          <div class="message" id="devices_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/sessions -->
+    <section>
+      <h2>/api/sessions</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Session ID <input id="session_id" value="TX123456"></label>
+          <label>Device ID <input id="session_device_id" value="123456789"></label>
+          <label>User ID <input id="session_user_id" value="123"></label>
+          <label>Start Time <input id="session_start" value="2025-11-25T09:00:00Z"></label>
+          <label>End Time <input id="session_end" value="2025-11-25T09:30:00Z"></label>
+          <label>Energy (kWh) <input id="session_energy" value="12.5"></label>
+          <label>CO2 Reduction (kg) <input id="session_co2" value="6.25"></label>
+          <label>Status <input id="session_status" value="finished"></label>
+          <button onclick="callApi('/api/sessions', {
+            session: {
+              session_id: val('session_id'),
+              device_id: val('session_device_id'),
+              user_id: val('session_user_id'),
+              start_time: val('session_start'),
+              end_time: val('session_end'),
+              energy_end: parseFloat(val('session_energy')),
+              co2_reduction_kg: parseFloat(val('session_co2')),
+              status: val('session_status')
+            }
+          }, 'sessions_result', 'sessions_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="sessions_result"></div>
+          <div class="message" id="sessions_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/alerts -->
+    <section>
+      <h2>/api/alerts</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Device ID <input id="alert_device_id" value="123456789"></label>
+          <label>Station ID <input id="alert_station_id" value="1"></label>
+          <label>Alert Type <input id="alert_type" value="Overheating"></label>
+          <label>Severity <input id="alert_severity" value="critical"></label>
+          <button onclick="callApi('/api/alerts', {
+            device_id: val('alert_device_id'),
+            station_id: val('alert_station_id'),
+            alert_type: val('alert_type'),
+            severity: val('alert_severity')
+          }, 'alerts_result', 'alerts_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="alerts_result"></div>
+          <div class="message" id="alerts_message"></div>
+        </div>
+      </div>
+    </section>
+
+     <!-- /api/firmware/check -->
+    <section>
+      <h2>/api/firmware/check</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Device ID <input id="fw_device_id" value="123456789"></label>
+          <label>Device Type <input id="fw_device_type" value="DC 120 V2"></label>
+          <label>Firmware Version <input id="fw_version" value="v1.2.4"></label>
+          <button onclick="callApi('/api/firmware/check', {
+            device_id: val('fw_device_id'),
+            device_type: val('fw_device_type'),
+            firmware_version: val('fw_version')
+          }, 'fw_result', 'fw_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="fw_result"></div>
+          <div class="message" id="fw_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/login/rfid -->
+    <section>
+      <h2>/api/login/rfid</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Card UID <input id="rfid_card_uid" value="RFID-ABC-123"></label>
+          <button onclick="callApi('/api/login/rfid', {
+            card_uid: val('rfid_card_uid')
+          }, 'rfid_result', 'rfid_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="rfid_result"></div>
+          <div class="message" id="rfid_message"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /api/login/qrcode/member -->
+    <section>
+      <h2>/api/login/qrcode/member</h2>
+      <div class="two-col">
+        <div>
+          <div class="pane-title">IN</div>
+          <label>Email <input id="qr_email" value="user@example.com"></label>
+          <button onclick="callApi('/api/login/qrcode/member', {
+            email: val('qr_email')
+          }, 'qr_result', 'qr_message')">送出</button>
+        </div>
+        <div>
+          <div class="pane-title">OUT</div>
+          <div class="result" id="qr_result"></div>
+          <div class="message" id="qr_message"></div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+
+  <script>
+    const API_BASE = "http://192.168.60.117/iEMS/public";
+    const val = (id) => document.getElementById(id).value.trim();
+    const enc = (id) => encodeURIComponent(val(id));
+
+    function callApi(endpoint, payload, resultId, messageId) {
+      fetch(API_BASE + "/server.php" + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload ?? {})
+      })
+      .then(async (res) => {
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          document.getElementById(resultId).textContent = data.result || "NG";
+          document.getElementById(messageId).textContent = data.message || "";
+        } catch {
+          document.getElementById(resultId).textContent = "NG";
+          document.getElementById(messageId).textContent = "非 JSON 回應：" + text.slice(0, 300);
+        }
+      })
+      .catch(err => {
+        document.getElementById(resultId).textContent = "NG";
+        document.getElementById(messageId).textContent = "Error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>
+

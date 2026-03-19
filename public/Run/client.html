@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>iEMS Client 前台模擬</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", Arial; padding: 20px; line-height: 1.5; }
+    header { margin-bottom: 20px; }
+    section { border: 1px solid #ccc; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    label { display: block; margin-top: 8px; font-size: 14px; }
+    input, textarea, select { width: 100%; padding: 8px; margin-top: 4px; font-size: 14px; }
+    button { margin-top: 12px; padding: 8px 12px; font-size: 14px; cursor: pointer; }
+    pre { background: #f5f5f5; padding: 12px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .note { color: #666; font-size: 12px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>iEMS Client 前台模擬</h1>
+    <div class="note">API Base: http://192.168.60.117/iEMS/public/server.php</div>
+  </header>
+
+  <!-- 1. RFID 登入 -->
+  <section>
+    <h2>/api/login/rfid</h2>
+    <div class="row">
+      <label>Card UID
+        <input id="rfid_card_uid" value="RFID-ABC123">
+      </label>
+      <label>Device ID
+        <input id="rfid_device_id" value="DEV-001">
+      </label>
+    </div>
+    <div class="row">
+      <label>使用者 ID（選填）
+        <input id="rfid_user_id" placeholder="例如 123">
+      </label>
+      <label>Status（active/inactive/guest）
+        <input id="rfid_status" value="active">
+      </label>
+    </div>
+    <button onclick="callApi('/api/login/rfid', {
+      card_uid: getVal('rfid_card_uid'),
+      device_id: getVal('rfid_device_id'),
+      user_id: getVal('rfid_user_id') || null,
+      status: getVal('rfid_status') || 'active'
+    })">送出 RFID 登入</button>
+  </section>
+
+  <!-- 2. QR Code 登入會員 -->
+  <section>
+    <h2>/api/login/qrcode/member</h2>
+    <div class="row">
+      <label>Email
+        <input id="qr_email" value="user@example.com">
+      </label>
+      <label>Password
+        <input id="qr_password" type="password" value="secret">
+      </label>
+    </div>
+    <label>Device ID
+      <input id="qr_device_id" value="DEV-002">
+    </label>
+    <button onclick="callApi('/api/login/qrcode/member', {
+      email: getVal('qr_email'),
+      password: getVal('qr_password'),
+      device_id: getVal('qr_device_id')
+    })">送出 QR 登入</button>
+  </section>
+
+  <!-- 3. 查詢站點 -->
+  <section>
+    <h2>/api/stations</h2>
+    <div class="note">此 API 不需 payload。</div>
+    <button onclick="callApi('/api/stations', {})">查詢站點</button>
+  </section>
+
+  <!-- 4. 查詢裝置 -->
+  <section>
+    <h2>/api/devices</h2>
+    <label>Device ID
+      <input id="device_id" value="123456789">
+    </label>
+    <button onclick="callApi('/api/devices', {
+      device_id: getVal('device_id')
+    })">查詢裝置</button>
+  </section>
+
+  <!-- 5. 裝置即時狀態（注意：後端需支援 /api/devices/{id}/status） -->
+  <section>
+    <h2>/api/devices/{id}/status</h2>
+    <label>Device ID
+      <input id="status_device_id" value="123456789">
+    </label>
+    <button onclick="callApi(`/api/devices/${encodeURIComponent(getVal('status_device_id'))}/status`, {})">查詢狀態</button>
+    <div class="note">若後端尚未實作此路徑，可能回傳 Unknown API endpoint。</div>
+  </section>
+
+  <!-- 6. 開始充電 Session -->
+  <section>
+    <h2>/api/sessions/start</h2>
+    <div class="row">
+      <label>Session ID
+        <input id="session_start_id" value="TX123456">
+      </label>
+      <label>Device ID
+        <input id="session_start_device" value="123456789">
+      </label>
+    </div>
+    <button onclick="callApi('/api/sessions/start', {
+      session_id: getVal('session_start_id'),
+      device_id: getVal('session_start_device')
+    })">開始充電</button>
+  </section>
+
+  <!-- 7. 結束充電 Session -->
+  <section>
+    <h2>/api/sessions/end</h2>
+    <label>Session ID
+      <input id="session_end_id" value="TX123456">
+    </label>
+    <button onclick="callApi('/api/sessions/end', {
+      session_id: getVal('session_end_id')
+    })">結束充電</button>
+  </section>
+
+  <!-- 8. 建立付款紀錄 -->
+  <section>
+    <h2>/api/payments</h2>
+    <div class="row">
+      <label>Session ID
+        <input id="payment_session_id" value="TX123456">
+      </label>
+      <label>Amount
+        <input id="payment_amount" value="120.00">
+      </label>
+    </div>
+    <label>Method
+      <input id="payment_method" value="CreditCard">
+    </label>
+    <button onclick="callApi('/api/payments', {
+      session_id: getVal('payment_session_id'),
+      amount: getVal('payment_amount'),
+      method: getVal('payment_method')
+    })">建立付款</button>
+  </section>
+
+  <!-- 9. 建立警示 -->
+  <section>
+    <h2>/api/alerts</h2>
+    <div class="row">
+      <label>Device ID
+        <input id="alert_device_id" value="123456789">
+      </label>
+      <label>Station ID
+        <input id="alert_station_id" value="1">
+      </label>
+    </div>
+    <div class="row">
+      <label>Alert Type
+        <input id="alert_type" value="Overheating">
+      </label>
+      <label>Severity（info/warning/critical）
+        <input id="alert_severity" value="critical">
+      </label>
+    </div>
+    <button onclick="callApi('/api/alerts', {
+      device_id: getVal('alert_device_id'),
+      station_id: getVal('alert_station_id'),
+      alert_type: getVal('alert_type'),
+      severity: getVal('alert_severity')
+    })">建立警示</button>
+  </section>
+
+  <!-- 10. 查詢 Firmware Catalog -->
+  <section>
+    <h2>/api/firmware/catalog</h2>
+    <div class="note">此 API 不需 payload。</div>
+    <button onclick="callApi('/api/firmware/catalog', {})">查詢 Firmware</button>
+  </section>
+
+  <!-- 11. 建立 OTA 更新（注意：後端需支援 /api/devices/{id}/actions） -->
+  <section>
+    <h2>/api/devices/{id}/actions</h2>
+    <label>Device ID
+      <input id="ota_device_id" value="123456789">
+    </label>
+    <div class="row">
+      <label>Version
+        <input id="ota_version" value="v1.3.0">
+      </label>
+      <label>Checksum
+        <input id="ota_checksum" value="sha256:abcd1234...">
+      </label>
+    </div>
+    <label>URL
+      <input id="ota_url" value="https://cdn.example.com/fw/v1.3.0.bin">
+    </label>
+    <button onclick="callApi(`/api/devices/${encodeURIComponent(getVal('ota_device_id'))}/actions`, {
+      device_id: getVal('ota_device_id'),
+      action: 'Firmware Update',
+      parameters: {
+        version: getVal('ota_version'),
+        source: {
+          url: getVal('ota_url'),
+          checksum: getVal('ota_checksum')
+        },
+        force: true,
+        schedule: { start: new Date().toISOString() }
+      },
+      status: 'pending',
+      triggered_at: new Date().toISOString()
+    })">建立 OTA 更新</button>
+    <div class="note">若後端尚未實作此路徑，可能回傳 Unknown API endpoint。</div>
+  </section>
+
+  <hr>
+  <h2>API 回傳結果</h2>
+  <pre id="output"></pre>
+
+  <script>
+    const API_BASE = "http://192.168.60.117/iEMS/public";
+    const getVal = (id) => document.getElementById(id).value.trim();
+
+    function callApi(endpoint, payload) {
+      fetch(API_BASE + "/server.php" + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload ?? {})
+      })
+      .then(res => res.text())
+      .then(text => {
+        // 方法 2：允許回傳 HTML 或 JSON
+        try {
+          const data = JSON.parse(text);
+          document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        } catch {
+          document.getElementById("output").textContent = text;
+        }
+      })
+      .catch(err => {
+        document.getElementById("output").textContent = "Error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>

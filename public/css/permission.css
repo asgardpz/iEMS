@@ -1,0 +1,657 @@
+/* 外層容器 */
+.monitoring-container {
+  position: relative;
+  color-scheme: light;
+  background-color: #111C40;
+  padding: 24px;
+  border: 1px solid #0049B7;
+  border-radius: 8px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 上層三欄區塊 */
+.query-section {
+  display: grid;
+  grid-template-columns:1fr 172px;
+  gap: 24px;
+  margin-bottom: 16px;
+  align-items: start;
+}
+
+/* 左：標題（白色） */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.5);
+  line-height: 20px;
+  margin-top: 4px;
+}
+
+/* 中：查詢條件區塊（分行） */
+.query-main-box {
+  background: #0b1e39;
+  border: 1px solid #bfc7d1;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 每一行 */
+.query-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 欄位緊貼排列 */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.field label {
+  color: #fff;
+  font-size: 13px;
+  line-height: 32px;
+  flex-shrink: 0;
+}
+
+/* 輸入框與下拉選單 */
+.input,
+.select {
+  height: 32px;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #b0b8c2;
+  border-radius: 4px;
+  background-color: #fff !important;
+  color: #111 !important;
+  appearance: none !important;
+  box-sizing: border-box;
+}
+.select option {
+  background-color: #fff !important;
+  color: #111 !important;
+}
+.input::placeholder {
+  color: #777;
+}
+
+/* Temp 單位 °C */
+.unit {
+  font-size: 13px;
+  color: #fff;
+  margin-left: 2px;
+}
+
+/* 查詢按鈕（藍底白字） */
+.field-button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.btn {
+  height: 32px;
+  width:100px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn-primary,
+.btn-new,
+.btn-search,
+.btn-reset,
+.btn-save,
+.btn-Apply,
+.btn-Reset,
+.btn-PDF,
+.btn-CSV,
+.btn-clear {
+  background: #3b82f6;
+  color: #fff;
+}
+
+/* 右側分頁區塊：三行排版，高度加高 */
+.show-entries-box {
+  background: #0b1e39;
+  border: 1px solid #bfc7d1;
+  border-radius: 6px;
+  height: 96px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 24px 32px 24px;
+  grid-template-areas:
+    "show-label"
+    "select"
+    "entries-label";
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 第一行：左上 Show */
+.show-label {
+  grid-area: show-label;
+  font-size: 13px;
+  line-height: 20px;
+  color: #cbd5e1;
+  justify-self: start;
+  align-self: start;
+}
+
+/* 第二行：中間分頁下拉（塞滿整行） */
+.select[name="per_page"] {
+  grid-area: select;
+  width: 100%;
+  height: 32px;
+  font-size: 13px;
+  border: 1px solid #b0b8c2;
+  border-radius: 4px;
+  background-color: #fff !important;
+  color: #111 !important;
+  appearance: none !important;
+  justify-self: stretch;
+  align-self: center;
+  box-sizing: border-box;
+}
+
+/* 第三行：右下 Entries */
+.entries-label {
+  grid-area: entries-label;
+  font-size: 13px;
+  line-height: 20px;
+  color: #cbd5e1;
+  justify-self: end;
+  align-self: end;
+}
+
+/* 表格區塊 */
+.device-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0b1e39;
+  color: #e6eef9;
+}
+
+.device-table thead th {
+  padding: 10px 8px;
+  border-bottom: 1px solid #244063;
+  color: #cfe0ff;
+  text-align: center;
+}
+.device-table tbody td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #173154;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 狀態點與文字 */
+.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.status-dot.maintenance { background-color: #f97316; }
+.status-dot.in-use      { background-color: #3b82f6; }
+.status-dot.online      { background-color: #22c55e; }
+.status-dot.offline     { background-color: #ef4444; }
+.status-text { font-size: 13px; }
+
+/* 表頭排序箭頭 */
+.sort-icon {
+  margin-left: 4px;
+  font-size: 12px;
+  color: #e6eef9;
+}
+
+/* Device ID SVG */
+.pin-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* 狀態色塊（透明背景 + 黑框） */
+.status-box {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+  background-color: transparent;
+}
+.status-online { color: #16a34a; border-color: #16a34a; }
+.status-offline { color: #ef4444; border-color: #ef4444; }
+.status-maintenance { color: #f97316; border-color: #f97316; }
+.status-inuse { color: #2563eb; border-color: #2563eb; }
+.status-available { color: #10b981; border-color: #10b981; }
+.status-default { color: #374151; border-color: #9ca3af; }
+
+/* Data Stream SVG 按鈕 */
+.stream-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.stream-icon {
+  width: 18px;
+  height: 18px;
+  fill: #6b7280;
+}
+
+/* ====== 分頁樣式（純文字版，符合 PM 要求） ====== */
+.pagination-controls {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+.pagination-controls button {
+  background: none;              /* 無背景 */
+  border: none;                  /* 無邊框 */
+  padding: 0;                    /* 無內距 */
+  color: #111;                   /* 黑字 */
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+.pagination-controls button.active {
+  color: #3b82f6;                /* 藍字 */
+  text-decoration: underline;    /* 底線 */
+  font-weight: 500;
+}
+.pagination-controls button:disabled {
+  opacity: 0.4;                  /* 淡化 */
+  cursor: not-allowed;
+}
+.pagination-controls span.ellipsis {
+  color: #999;                   /* 灰字 */
+  font-size: 14px;
+}
+
+
+/* 共用樣式：圓點字元 ● */
+.dot-online,
+.dot-inuse,
+.dot-offline,
+.dot-maintenance {
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Online：綠色 */
+.dot-online {
+  color: #16a34a;
+}
+
+/* In Use：藍色 */
+.dot-inuse {
+  color: #2563eb;
+}
+
+/* Offline：紅色 */
+.dot-offline {
+  color: #ef4444;
+}
+
+/* Maintenance：橘色 */
+.dot-maintenance {
+  color: #f97316;
+}
+
+/* 共用樣式：狀態色塊 */
+.status-box {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+  background-color: transparent;
+}
+
+/* Online：綠色 */
+.status-online {
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+/* Offline：紅色 */
+.status-offline {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* Maintenance：橘色 */
+.status-maintenance {
+  color: #f97316;
+  border-color: #f97316;
+}
+
+/* In Use：藍色 */
+.status-inuse {
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Available：青色 */
+.status-available {
+  color: #0d9488;
+  border-color: #0d9488;
+}
+
+/* Unknown：灰色 */
+.status-unknown {
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+/* Panel container */
+.cpt-panel {
+  background: #0f172a;        /* dark surface */
+  border: 1px solid #1e293b;  /* subtle border */
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+/* Header and legend */
+.cpt-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cpt-chart-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;             /* light text */
+}
+
+.cpt-legend-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cpt-line {
+  width: 28px;                /* visible legend stroke */
+  height: 3px;
+  border-radius: 2px;
+  display: inline-block;
+  /* color is provided inline via style attribute to match PM spec */
+}
+
+.cpt-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #cbd5e1;             /* muted label */
+}
+
+/* Canvas sizing */
+.cpt-chart-canvas {
+  width: 100%;
+  height: 240px;              /* matches PM spec */
+  display: block;
+  background: transparent;
+}
+
+/* Description text */
+.cpt-chart-desc {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #94a3b8;             /* secondary text */
+}
+
+/* 狀態膠囊框（左右圓角） */
+.tag {
+  display: inline-block;
+  padding: 2px 2px;    /* 上下 2px，左右 6px → 左右空間縮小 */
+  border-radius: 9999px;
+  font-size: 14px;     /* 字體縮小一點 */
+  font-weight: 500;    /* 字重稍微降低 */
+  border: 1px solid;
+  background-color: transparent;
+  line-height: 1.2;    /* 壓縮行高 */
+}
+
+
+
+.tag-completed   { color: #16a34a; border-color: #16a34a; }
+.tag-pending     { color: #ef4444; border-color: #ef4444; }
+.tag-inprogress  { color: #f97316; border-color: #f97316; }
+.tag-default     { color: #374151; border-color: #9ca3af; }
+
+/* Priority 標籤（方框） */
+.priority {
+  display: inline-block;
+  padding: 6px 6px;
+  border-radius: 5px;  
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;             /* 白字 */
+}
+
+/* 不同等級顏色 */
+.priority-high    { background-color: #ef4444; } /* 紅色 */
+.priority-medium  { background-color: #f97316; } /* 橘色 */
+.priority-low     { background-color: #2563eb; } /* 藍色 */
+.priority-default { background-color: #374151; } /* 灰色 */
+
+/* 狀態顏色 */
+.status-active {
+  background-color: #22c55e; /* 綠色 */
+  color: #ffffff;           /* 白字，避免看不清楚 */
+  padding: 2px 8px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+.status-inactive {
+  background-color: #ef4444; /* 紅色 */
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+
+.table-expanded {
+  position: relative;
+  z-index: 10;
+  margin-top: -276px; /* 覆蓋上面兩個表格 */
+}
+
+.query-right {
+  position: absolute;   /* 絕對定位 */
+  top: 1px;            /* 距離容器頂端 */
+  right: 10px;          /* 距離容器右側 */
+  z-index: 30;          /* 保證在最上層 */
+}
+
+.expand-btn {
+  width: 32px;
+  height: 32px;
+  background-color: #3b82f6; /* 藍底 */
+  color: #fff;              /* 白色箭頭 */
+  border: none;
+  border-radius: 4px;        /* 圓角方框 */
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 32px;
+  text-align: center;
+  padding: 0;
+}
+
+.query-section.wide {
+  grid-template-columns: 1fr auto; /* 左邊自動撐滿，右邊只佔按鈕大小 */
+}
+
+#report-content {
+  display: grid;
+  height: 90vh; /* 整個畫面高度 */
+  grid-template-rows: auto auto auto; /* 三層 */
+  gap: 12px; /* 每層之間都有空格 */
+}
+
+.middle-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 左右兩欄 */
+  gap: 24px;                      /* 左右欄之間的空格 */
+  padding-top: 12px;              /* 上面留空格 */
+  padding-bottom: 12px;           /* 下面留空格 */
+}
+
+.middle-section > div {
+  overflow: auto; /* 表格內容可在區塊內滾動 */
+}
+
+.bottom-section {
+  flex: 1; /* 佔滿剩餘高度 */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-section .device-table {
+  flex: 1; /* 表格自動撐滿 */
+  overflow: auto; /* 表格內部滾動 */
+}
+
+.device-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0b1e39;
+  color: #e6eef9;
+  table-layout: fixed; /* 固定寬度分配 */
+}
+
+.device-table th,
+.device-table td {
+  padding: 4px 6px;    /* 減少格子空間 */
+  font-size: 12px;     /* 字體縮小 */
+  line-height: 0.5;    /* 壓縮行高 */
+  white-space: nowrap; /* 不換行 */
+}
+
+.member-block {
+  margin-top: 1em;     /* 上方留一行 */
+  margin-bottom: 1em;  /* 下方留一行 */
+  height: 20px;         /* 固定整個區塊高度 */
+}
+
+.member-search {
+  display: flex;
+  justify-content: space-between; /* 左右分散 */
+  align-items: center;            /* 垂直置中 */
+}
+
+.member-search .label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.member-search .actions {
+  display: flex;
+  gap: 12px; /* 按鈕間距 */
+}
+
+.table-expanded {
+  position: relative;
+  z-index: 10;
+  margin-top: -266px; /* 覆蓋上面兩個表格 */
+}
+
+.roles-layout {
+  border: 1px solid#9ca3af;
+  padding: 20px;
+  background-color: #132c50;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+}
+
+/* 讓 checkbox 區塊排版整齊 */
+.roles-layout table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roles-layout td {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.roles-layout label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.roles-layout input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+  accent-color: #2563eb; /* 藍色勾選效果 */
+}
+.permissions-row {
+  display: table-row;
+}
+
+.permissions-row td {
+  width: 20%;          /* 五等分 */
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.permissions-row label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.permissions-row input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+  accent-color: #2563eb; /* 藍色勾選效果 */
+}
+
+thead th {
+  padding: 12px 8px;
+  line-height: 1.6 !important;
+  min-height: 60px;
+  height: auto;
+  vertical-align: middle;
+  white-space: normal;
+  word-break: break-word; /* 避免長字壓縮 */
+}

@@ -1,0 +1,35 @@
+-- 在 payments 新增流水號欄位
+ALTER TABLE payments ADD COLUMN serial_code VARCHAR(126);
+
+-- 在 charging_sessions 新增流水號欄位
+ALTER TABLE charging_sessions ADD COLUMN serial_code VARCHAR(126);
+
+-- 初始化變數
+SET @prev_date := '';
+SET @rownum := 0;
+
+-- 依 transaction_time 生成流水號並更新 payments
+UPDATE payments p
+JOIN (
+    SELECT 
+        p.id,
+        CONCAT(
+            DATE_FORMAT(p.transaction_time, '%Y%m%d'),
+            LPAD(
+                IF(@prev_date = DATE(p.transaction_time),
+                   @rownum := @rownum + 1,
+                   @rownum := 1
+                ), 
+                5, '0'
+            )
+        ) AS new_serial,
+        @prev_date := DATE(p.transaction_time)
+    FROM payments p
+    ORDER BY DATE(p.transaction_time), p.transaction_time, p.id
+) t ON p.id = t.id
+SET p.serial_code = t.new_serial;
+
+-- 同步更新 charging_sessions (依照原本的 session_id 對應)
+UPDATE charging_sessions cs
+JOIN payments p ON cs.session_id = p.session_id
+SET cs.serial_code = p.serial_code;
