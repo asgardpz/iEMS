@@ -173,7 +173,7 @@
         </a>
       @endif
       <!-- Menu Item 8 -->
-      @if($role && $role->member)         
+  
         <a href="{{ route('member') }}" class="menu-item {{ Request::is('member*') ? 'active' : '' }}">
           <span class="menu-icon-box">
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -188,7 +188,7 @@
           </span>
           <span class="menu-label" data-i18n="menu4">Member Management</span>
         </a>
-      @endif
+
       <!-- Menu Item 9 -->
       @if($role && $role->permission)          
         <a href="{{ route('permission') }}" class="menu-item {{ Request::is('permission*') ? 'active' : '' }}">
@@ -203,7 +203,7 @@
         </a>
       @endif
       <!-- Menu Item 10 -->
-      @if($role && $role->account)           
+
       <a href="{{ route('account') }}" class="menu-item {{ Request::is('account*') ? 'active' : '' }}">
         <span class="menu-icon-box">
           <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -215,7 +215,7 @@
         </span>
         <span class="menu-label" data-i18n="menu4">Account Management</span>
       </a>
-      @endif
+
       <!-- Sidebar Version -->
       <div class="version">v1.0.2</div>
       <div class="sidebar-edge">
