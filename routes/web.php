@@ -111,3 +111,7 @@ Route::get('/account', [accountController::class, 'show'])
 Route::post('/account/store', [accountController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('account.store');
+
+Route::get('/account/delete/{id}', [accountController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('account.delete');
