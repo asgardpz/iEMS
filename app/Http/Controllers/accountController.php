@@ -160,4 +160,22 @@ class accountController extends Controller
             ->with('roles_table', $roles_table); // 帶回 roles_table
     }    
 
+    public function destroy($id)
+    {
+        // 先找 members
+        $member = DB::table('members')->where('id', $id)->first();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => '帳號不存在'
+            ], 404);
+        }
+
+        // 刪 members
+        DB::table('members')->where('id', $id)->delete();
+
+        return redirect()->back()->with('success', '會員資料刪除成功！');
+    }
+    
 }
