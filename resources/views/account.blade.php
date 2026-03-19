@@ -906,4 +906,16 @@ function applyFilters() {
   });
 
 </script>
+<script>
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.stream-btn');
+    if (!btn) return;
 
+    const staffId = btn.dataset.id;
+
+    if (confirm(`確定要刪除這筆帳號資料嗎？（ID: ${staffId}）`)) {
+        window.location.href = `{{ url('account/delete') }}/${staffId}`;
+    }
+});
+
+</script>
