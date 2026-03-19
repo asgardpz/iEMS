@@ -85,53 +85,7 @@
 ---
 
 ## 系統架構圖 (文字模式)
-
-EV Charger Backend System
-│
-├── EV Charger Device (充電樁)
-│   ├── 狀態上報 (電流 / 電壓 / 溫度 / 功率)
-│   ├── 動作控制 (韌體更新 / 啟停)
-│   └── 支付資訊
-│
-├── API 層
-│   ├── Client API 前台模擬
-│   │   ├── /api/devices/{id}/status
-│   │   ├── /api/devices/{id}/actions
-│   │   ├── /api/firmware_catalog
-│   │   ├── /api/sessions
-│   │   ├── /api/payments
-│   │   └── /api/stations
-│   │
-│   └── Server API 後台服務
-│       ├── Device Status History
-│       └── Device Actions (韌體更新、排程、檢查碼)
-│
-├── Database (MySQL)
-│   ├── 帳號資料表
-│   ├── 交易紀錄表
-│   ├── 設備狀態表
-│   ├── 維護工單表
-│   └── 報表/分析資料表
-│
-├── Backend System (Laravel)
-│   ├── Real-Time Monitoring
-│   ├── Dashboard
-│   ├── Transactions & Billing
-│   ├── Maintenance Management
-│   ├── Reports & Analytics
-│   ├── Device Management
-│   ├── Work Order Management
-│   ├── Member Management
-│   ├── Permission Settings
-│   └── Account Management
-│
-└── Web UI (Blade + JS + CSS)
-    ├── Home
-    ├── Login
-    └── SignUp
-
-
-
+![Flow](https://github.com/asgardpz/iEMS/blob/main/public/Flow.jpg)
 ---
 
 ## 技術架構
