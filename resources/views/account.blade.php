@@ -355,6 +355,7 @@
     clampCurrentPage(data.length);
     const start = (currentPage - 1) * pageSize;
     const pageData = data.slice(start, start + pageSize);
+    const currentStaffId = document.getElementById("staffidInput").value;
 
     pageData.forEach(row => {
       const tr = document.createElement("tr");
@@ -372,13 +373,15 @@
         <td>${row.active_date}</td>     <!-- Active Date -->
         <td>${row.last_login}</td>      <!-- Last Login -->
         <td>
-          <button class="stream-btn" data-id="${row.staff_id}" title="Delete">
-          <svg width="25" height="29" viewBox="0 0 25 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22.6201 3.12C23.9124 3.12006 24.9599 4.1676 24.96 5.45984C24.96 6.75215 23.9124 7.79962 22.6201 7.79968H21.8398V23.4003C21.8397 25.9847 19.7446 28.0798 17.1602 28.08H7.7998C5.21525 28.0799 3.12028 25.9848 3.12012 23.4003V7.79968H2.33984C1.04757 7.7996 0 6.75213 0 5.45984C8.4519e-05 4.16762 1.04762 3.12008 2.33984 3.12H22.6201Z" fill="#ED0008"/>
-          <path d="M12.4801 10.92V22.62M16.3801 10.92V22.62M8.58008 10.92V22.62" stroke="white" stroke-width="1.56" stroke-linecap="round"/>
-          <path d="M12.4805 0C14.2035 4.74462e-05 15.6005 1.0476 15.6006 2.33984C15.6006 3.63216 14.2035 4.67964 12.4805 4.67969C10.7573 4.67969 9.36035 3.63219 9.36035 2.33984C9.36046 1.04757 10.7574 0 12.4805 0Z" fill="#ED0008"/>
-          </svg>
-          </button>
+          ${row.staff_id == currentStaffId ? `
+            <button class="stream-btn" data-id="${row.staff_id}" title="Delete">
+              <svg width="25" height="29" viewBox="0 0 25 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.6201 3.12C23.9124 3.12006 24.9599 4.1676 24.96 5.45984C24.96 6.75215 23.9124 7.79962 22.6201 7.79968H21.8398V23.4003C21.8397 25.9847 19.7446 28.0798 17.1602 28.08H7.7998C5.21525 28.0799 3.12028 25.9848 3.12012 23.4003V7.79968H2.33984C1.04757 7.7996 0 6.75213 0 5.45984C8.4519e-05 4.16762 1.04762 3.12008 2.33984 3.12H22.6201Z" fill="#ED0008"/>
+                <path d="M12.4801 10.92V22.62M16.3801 10.92V22.62M8.58008 10.92V22.62" stroke="white" stroke-width="1.56" stroke-linecap="round"/>
+                <path d="M12.4805 0C14.2035 4.74462e-05 15.6005 1.0476 15.6006 2.33984C15.6006 3.63216 14.2035 4.67964 12.4805 4.67969C10.7573 4.67969 9.36035 3.63219 9.36035 2.33984C9.36046 1.04757 10.7574 0 12.4805 0Z" fill="#ED0008"/>
+              </svg>
+            </button>
+          ` : ''}
         </td>
 
       `;
@@ -906,6 +909,7 @@ function applyFilters() {
   });
 
 </script>
+
 <script>
 document.addEventListener('click', function (e) {
     const btn = e.target.closest('.stream-btn');
@@ -913,9 +917,10 @@ document.addEventListener('click', function (e) {
 
     const staffId = btn.dataset.id;
 
-    if (confirm(`確定要刪除這筆帳號資料嗎？（ID: ${staffId}）`)) {
+    if (confirm(`確定要刪除這筆帳號資料嗎？（Staff ID: ${staffId}）`)) {
         window.location.href = `{{ url('account/delete') }}/${staffId}`;
     }
 });
 
 </script>
+
